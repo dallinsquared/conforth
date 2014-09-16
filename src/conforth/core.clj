@@ -5,12 +5,15 @@
   (fn [e] (some #(= true %) (map #(% e) fs))))
 (defn popn [x s]
   (reduce #(%2 %1) s (repeat x pop)))
-(defn eval* [s] (letfn [(eval1 [e z]
+(defn push [x s]
+  (conj s x))
+(defn eval* [s env] (letfn [(eval1 [e z env]
                                (cond
                                 ((pcomp number? char?) e) s
-                                (vector? e) (eval2 e z)
+                                (vector? e) (evalvec e z)
                                 ))
-                        (eval2 [e z])]))
+                        (evalvec [v z env]
+                                 (reduce #(eval1 (%2 %1 env)) z v))])) ;;implement mutable env
 (defn true* [s]
   (let [;f (peek s)
         t (peek (pop s))
@@ -47,3 +50,4 @@
 (contains? [:a :b :c :d] :a)
 (some #(= % :s) [:a :b :c :d])
 (pcomp number? char?)
+(conj [1 2 3 4] 5)
