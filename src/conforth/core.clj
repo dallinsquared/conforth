@@ -7,22 +7,22 @@
   (reduce #(%2 %1) s (repeat x pop)))
 (defn push [x s]
   (conj s x))
-(defn eval* [s env] (letfn [(eval1 [e z env]
-                               (cond
-                                ((pcomp number? char?) e) s
-                                (vector? e) (evalvec e z)
-                                ))
-                        (evalvec [v z env]
-                                 (reduce #(eval1 (%2 %1 env)) z v))])) ;;implement mutable env
-(defn true* [s]
+(defn rcomp [& coll]
+  (apply comp (reverse coll)))
+(defn eval. [s env] (letfn [])) ;;implement mutable env
+(defn true. [s]
   (let [;f (peek s)
         t (peek (pop s))
         z (popn 2 s)]
     ))
-(defn false* [x y]
+(defn compile. [v]
+  (apply rcomp v))
+(defn false. [x y]
   y)
 (defn slift [n f]
   #(conj (popn n %) (apply f (take-last n %))))
+(defn slift-const [x]
+  (slift 0 (fn [] x)))
 (defn rslift [n f]
   #(conj (popn n %) (apply f (reverse (take-last n %)))))
 (def p {:plus (slift 2 +)
@@ -51,3 +51,13 @@
 (some #(= % :s) [:a :b :c :d])
 (pcomp number? char?)
 (conj [1 2 3 4] 5)
+((slift-const "abc") stack)
+((apply rcomp [(partial * 2) inc (partial / 3)]) 5)
+(def x 5)
+((fn [] (def x (inc x))))
+((fn [] (def x (inc x))))
+
+x
+((fn [] (def x (inc x))))
+x
+(/ 5 3)
