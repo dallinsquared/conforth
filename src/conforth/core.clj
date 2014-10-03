@@ -3,14 +3,14 @@
 ;;;utilities
 (defn rcomp [& coll]
   (apply comp (reverse coll)))
+(defn popn [x s]
+  (reduce #(%2 %1) s (repeat x pop)))
 (defn slift [n f]
   #(conj (popn n %) (apply f (take-last n %))))
 (defn slift-const [x]
   (slift 0 (fn [] x)))
 (defn rslift [n f]
   #(conj (popn n %) (apply f (reverse (take-last n %)))))
-(defn popn [x s]
-  (reduce #(%2 %1) s (repeat x pop)))
 (defn pcomp [& fs]
   (fn [e] (some #(= true %) (map #(% e) fs))))
 (defn push [x s]
@@ -22,7 +22,7 @@
      (case v
        :val dat
        :env env
-       :pop [(pop dat) (mk-stack (vec (drop-last dat)) env)]
+       :pop [(peek dat) (mk-stack (vec (pop dat)) env)]
        ))
     ([c & args]
      (case c
@@ -51,6 +51,7 @@
         :times (slift 2 *)
         :div (slift 2 /)})
 ;;; test bed
+(((mk-stack [1 2 3 4 5 6 ] {}) :def 'a 2) :env)
 (def stack [1 2 3 4 5 6 [2 2 + -]])  ;;eval each element of vector to eval vector
 (def plus (slift 2 +))
 (def minus (slift 2 -))
